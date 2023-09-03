@@ -1,0 +1,88 @@
+###################
+## Project Settings
+###################
+
+
+
+###################
+## Global Settings
+###################
+
+# Visual studio
+**/[Dd]ebug/
+**/[Dd]ebugPublic/
+**/[Rr]elease/
+**/[Rr]eleases/
+**/x64/
+**/x86/
+**/[Ww][Ii][Nn]32/
+**/[Aa][Rr][Mm]/
+**/[Aa][Rr][Mm]64/
+**/bld/
+**/[Bb]in/
+**/[Oo]bj/
+**/[Ll]og/
+**/[Ll]ogs/
+**/[Pp]ublish/
+**/[Cc]lient[Bb]in/
+**/[Bb]uild/
+
+# Node js
+**/.ntvs_analysis.dat
+**/node_modules/
+
+# Python
+**/__pycache__/
+**/*.pyc
+
+# Mac os
+**/*.dmg
+**/*.app
+**/.DS_Store
+**/.AppleDouble
+**/.LSOverride
+**/.CFUserTextEncoding
+
+# Volume files
+**/.DocumentRevisions-V100
+**/.fseventsd
+**/.Spotlight-V100
+**/.TemporaryItems
+**/.Trashes
+**/.VolumeIcon.icns
+**/.com.apple.timemachine.donotpresent
+
+# Vs code
+**/.vscode/*
+!**/.vscode/settings.json
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/extensions.json
+
+# Environment
+**/[Ee]nv
+**/.[Ee]nv
+**/[Ss]ecrets
+
+# Jetbrains
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/**/usage.statistics.xml
+**/.idea/**/dictionaries
+**/.idea/**/shelf
+**/.idea/**/aws.xml
+**/.idea/**/contentModel.xml
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+**/.idea/**/uiDesigner.xml
+**/.idea/**/dbnavigator.xml
+**/.idea/httpRequests
+**/*.iws
+**/out/
+
+
+
+
