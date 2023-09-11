@@ -1,4 +1,3 @@
-using Excubo.Blazor.Canvas;
 using Excubo.Blazor.Canvas.Contexts;
 
 namespace Tetris.Models;

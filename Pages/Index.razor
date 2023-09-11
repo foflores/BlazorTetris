@@ -40,12 +40,10 @@
 
 <script>
   function buildCanvas() {
-    let height = (80 * window.innerHeight) / 100;
+    let height = window.innerHeight - 130;
     let canvas = document.querySelector("#canvas");
     canvas.height = height;
     canvas.width = height / 2;
-    canvas.style.height = height.toString();
-    canvas.style.width = (height / 2).toString();
     return height;
   }
 

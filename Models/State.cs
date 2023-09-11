@@ -1,6 +1,3 @@
-using Excubo.Blazor.Canvas.Contexts;
-using Microsoft.JSInterop;
-
 namespace Tetris.Models;
 
 public class State
@@ -59,13 +56,11 @@ public class State
                 continue;
 
             var row = _cells.Where(x => x.Row == i).ToList();
-            var tasks = row.Select(_grid.DeleteCell);
-            await Task.WhenAll(tasks);
+            await _grid.DeleteCells(row);
 
             _cells.RemoveAll(x => x.Row == i);
             var cellsToMove = _cells.Where(x => x.Row < i).ToList();
-            var deleteTasks = cellsToMove.Select(_grid.DeleteCell);
-            await Task.WhenAll(deleteTasks);
+            await _grid.DeleteCells(cellsToMove);
             cellsToMove.ForEach(x => x.Row++);
             await _grid.DrawCells(cellsToMove);
 
