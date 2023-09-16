@@ -33,3 +33,7 @@ jobs:
 
       - name: Deploy to aws
         run: aws s3 sync ./publish/wwwroot s3://blazor-tetris-20230913142421969200000002 --delete
+        working-directory: ${{ env.working-directory }}
+
+      - name: Invalidate cdn
+        run: aws cloudfront create-invalidation --distribution-id EX7KZ251EZG0X --paths "/*"
