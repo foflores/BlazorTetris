@@ -5,6 +5,7 @@ public class State
     private readonly Grid _grid;
     private readonly List<Cell> _cells;
     private Tetromino _currentTetromino;
+    private Tetromino _nextTetromino;
     private readonly System.Timers.Timer _timer;
     private int _rowsCleared;
     private readonly int _rows;
@@ -21,6 +22,7 @@ public class State
         _grid = grid;
         _cells = new List<Cell>();
         _currentTetromino = GenerateNewTetromino();
+        _nextTetromino = GenerateNewTetromino();
         _timer = new System.Timers.Timer();
         _timer.Elapsed += async (s, e) => await MoveDown();
         _rows = rows;
@@ -30,6 +32,7 @@ public class State
         IsPaused = true;
 
         _grid.ClearGrid();
+        _grid.DrawNextPiece(_nextTetromino);
     }
 
     private static Tetromino GenerateNewTetromino()
@@ -155,7 +158,9 @@ public class State
             _currentTetromino.Cells.ForEach(_cells.Add);
             await ClearRows();
             _timer.Interval = (double)1000 / Level;
-            _currentTetromino = GenerateNewTetromino();
+            _currentTetromino = _nextTetromino;
+            _nextTetromino = GenerateNewTetromino();
+            await _grid.DrawNextPiece(_nextTetromino);
             return;
         }
 

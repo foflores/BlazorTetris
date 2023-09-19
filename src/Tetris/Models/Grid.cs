@@ -5,6 +5,7 @@ namespace Tetris.Models;
 public class Grid
 {
     private readonly Context2D _context;
+    private readonly Context2D _nextPieceContext;
     private readonly double _canvasHeight;
     private readonly double _canvasWidth;
     private readonly double _cellWidth;
@@ -14,6 +15,7 @@ public class Grid
 
     public Grid (
         Context2D context,
+        Context2D nextPieceContext,
         double canvasHeight,
         double canvasWidth,
         int rows,
@@ -21,6 +23,7 @@ public class Grid
     )
     {
         _context = context;
+        _nextPieceContext = nextPieceContext;
         _canvasHeight = canvasHeight;
         _canvasWidth = canvasWidth;
         _cellWidth = canvasWidth / columns;
@@ -91,5 +94,30 @@ public class Grid
     public async Task DeleteTetromino(Tetromino tetromino)
     {
         await DeleteCells(tetromino.Cells);
+    }
+
+    public async Task DrawNextPiece(Tetromino tetromino)
+    {
+        await _nextPieceContext.FillStyleAsync("white");
+        await _nextPieceContext.FillRectAsync(0, 0, _canvasHeight / 4, _canvasHeight / 4);
+        await _nextPieceContext.FillStyleAsync("black");
+        await _nextPieceContext.LineWidthAsync(2);
+        for (double i = 0; i <= _canvasHeight / 4; i += _canvasHeight / 20)
+        {
+            for (double j = 0; j <= _canvasHeight / 4; j += _canvasHeight / 20)
+            {
+                await _nextPieceContext.StrokeRectAsync(j, i, _canvasHeight / 20, _canvasHeight / 20);
+            }
+        }
+        foreach (var cell in tetromino.Cells)
+        {
+            await _nextPieceContext.FillStyleAsync(cell.Color);
+            await _nextPieceContext.FillRectAsync(
+                (cell.Column - 3) * _canvasHeight / 20 + 1,
+                (cell.Row + 4) * _canvasHeight / 20 + 1,
+                _canvasHeight / 20 - 2,
+                _canvasHeight / 20 - 2
+            );
+        }
     }
 }

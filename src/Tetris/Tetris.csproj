@@ -16,6 +16,11 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
       <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
+      <_ContentIncludedByDefault Remove="publish\web.config" />
+      <_ContentIncludedByDefault Remove="publish\libman.json" />
+      <_ContentIncludedByDefault Remove="publish\publish\libman.json" />
+      <_ContentIncludedByDefault Remove="publish\publish\wwwroot\_framework\blazor.boot.json" />
+      <_ContentIncludedByDefault Remove="publish\wwwroot\_framework\blazor.boot.json" />
     </ItemGroup>
 
 

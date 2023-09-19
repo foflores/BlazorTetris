@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "defaultProvider": "cdnjs",
+  "defaultDestination": "wwwroot",
   "libraries": [
     {
       "library": "bootstrap@5.3.1",
@@ -8,7 +9,7 @@
         "css/bootstrap.min.css",
         "js/bootstrap.bundle.min.js"
       ],
-      "destination": "wwwroot"
+      "destination": "wwwroot/lib"
     }
   ]
 }
