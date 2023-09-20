@@ -1,16 +1,15 @@
-namespace Tetris.Models;
+namespace Tetris.Application;
 
-public class TetrominoT : Tetromino
+public class TetrominoL : Tetromino
 {
-    public TetrominoT()
+    public TetrominoL()
     {
-        const string color = "purple";
+        const string color = "orange";
         Cells.Add(new Cell(-1, 4, color));
         Cells.Add(new Cell(-1, 5, color));
         Cells.Add(new Cell(-1, 6, color));
-        Cells.Add(new Cell(-2, 5, color));
+        Cells.Add(new Cell(-2, 6, color));
     }
-
     public override void Rotate()
     {
         switch (Rotation)
@@ -20,8 +19,7 @@ public class TetrominoT : Tetromino
                 Cells[0].Row -= 1;
                 Cells[2].Column -= 1;
                 Cells[2].Row += 1;
-                Cells[3].Column += 1;
-                Cells[3].Row += 1;
+                Cells[3].Row += 2;
                 Rotation = Rotation.Right;
                 break;
             case Rotation.Right:
@@ -29,8 +27,7 @@ public class TetrominoT : Tetromino
                 Cells[0].Row += 1;
                 Cells[2].Column -= 1;
                 Cells[2].Row -= 1;
-                Cells[3].Column -= 1;
-                Cells[3].Row += 1;
+                Cells[3].Column -= 2;
                 Rotation = Rotation.Down;
                 break;
             case Rotation.Down:
@@ -38,8 +35,7 @@ public class TetrominoT : Tetromino
                 Cells[0].Row += 1;
                 Cells[2].Column += 1;
                 Cells[2].Row -= 1;
-                Cells[3].Column -= 1;
-                Cells[3].Row -= 1;
+                Cells[3].Row -= 2;
                 Rotation = Rotation.Left;
                 break;
             case Rotation.Left:
@@ -47,8 +43,7 @@ public class TetrominoT : Tetromino
                 Cells[0].Row -= 1;
                 Cells[2].Column += 1;
                 Cells[2].Row += 1;
-                Cells[3].Column += 1;
-                Cells[3].Row -= 1;
+                Cells[3].Column += 2;
                 Rotation = Rotation.Up;
                 break;
         }

@@ -1,4 +1,4 @@
-namespace Tetris.Models;
+namespace Tetris.Application;
 
 public enum Rotation
 {

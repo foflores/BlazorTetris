@@ -1,14 +1,14 @@
-namespace Tetris.Models;
+namespace Tetris.Application;
 
-public class TetrominoZ : Tetromino
+public class TetrominoS : Tetromino
 {
-    public TetrominoZ()
+    public TetrominoS()
     {
-        const string color = "red";
-        Cells.Add(new Cell(-2, 4, color));
-        Cells.Add(new Cell(-2, 5, color));
+        const string color = "green";
+        Cells.Add(new Cell(-1, 4, color));
         Cells.Add(new Cell(-1, 5, color));
-        Cells.Add(new Cell(-1, 6, color));
+        Cells.Add(new Cell(-2, 5, color));
+        Cells.Add(new Cell(-2, 6, color));
     }
 
     public override void Rotate()
@@ -20,8 +20,8 @@ public class TetrominoZ : Tetromino
                 Cells[0].Column += 1;
                 Cells[1].Row -= 1;
                 Cells[2].Column -= 1;
-                Cells[3].Row -= 1;
                 Cells[3].Column -= 2;
+                Cells[3].Row -= 1;
                 Rotation = Rotation.Right;
                 break;
             case Rotation.Right:
@@ -29,8 +29,8 @@ public class TetrominoZ : Tetromino
                 Cells[0].Column -= 1;
                 Cells[1].Row += 1;
                 Cells[2].Column += 1;
-                Cells[3].Row += 1;
                 Cells[3].Column += 2;
+                Cells[3].Row += 1;
                 Rotation = Rotation.Up;
                 break;
         }

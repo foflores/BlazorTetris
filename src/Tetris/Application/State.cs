@@ -1,4 +1,4 @@
-namespace Tetris.Models;
+namespace Tetris.Application;
 
 public class State
 {
@@ -53,9 +53,9 @@ public class State
     }
     private async Task ClearRows()
     {
-        for (var i = 0; i <= 19; i++)
+        for (var i = 0; i < _rows; i++)
         {
-            if (_cells.Count(x => x.Row == i) < 10)
+            if (_cells.Count(x => x.Row == i) < _columns)
                 continue;
 
             var row = _cells.Where(x => x.Row == i).ToList();

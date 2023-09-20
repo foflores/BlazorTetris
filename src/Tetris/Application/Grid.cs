@@ -1,6 +1,6 @@
 using Excubo.Blazor.Canvas.Contexts;
 
-namespace Tetris.Models;
+namespace Tetris.Application;
 
 public class Grid
 {
@@ -95,7 +95,6 @@ public class Grid
     {
         await DeleteCells(tetromino.Cells);
     }
-
     public async Task DrawNextPiece(Tetromino tetromino)
     {
         await _nextPieceContext.FillStyleAsync("white");
