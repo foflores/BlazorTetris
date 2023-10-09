@@ -1,4 +1,4 @@
-namespace Tetris.Application;
+namespace BlazorTetris.Application;
 
 public enum Rotation
 {
