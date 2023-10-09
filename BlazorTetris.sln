@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTetris", "src/BlazorTetris/BlazorTetris.csproj", "{D8329ACA-88A4-4857-8E91-6220D0F7797F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTetris", "BlazorTetris/BlazorTetris.csproj", "{D8329ACA-88A4-4857-8E91-6220D0F7797F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{E1AF16B5-971A-46D2-B8CA-E79347B8A8DE}"
 	ProjectSection(SolutionItems) = preProject
