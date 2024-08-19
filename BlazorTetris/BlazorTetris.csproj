@@ -1,27 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.27" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all"/>
+        <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.58" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
-      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
-      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
-      <_ContentIncludedByDefault Remove="publish\web.config" />
-      <_ContentIncludedByDefault Remove="publish\libman.json" />
-      <_ContentIncludedByDefault Remove="publish\publish\libman.json" />
-      <_ContentIncludedByDefault Remove="publish\publish\wwwroot\_framework\blazor.boot.json" />
-      <_ContentIncludedByDefault Remove="publish\wwwroot\_framework\blazor.boot.json" />
-    </ItemGroup>
-
 
 </Project>

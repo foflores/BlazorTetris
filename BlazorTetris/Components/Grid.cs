@@ -1,6 +1,6 @@
 using Excubo.Blazor.Canvas.Contexts;
 
-namespace BlazorTetris.Application;
+namespace BlazorTetris.Components;
 
 public class Grid
 {

@@ -1,4 +1,4 @@
-namespace BlazorTetris.Application;
+namespace BlazorTetris.Components;
 
 public abstract class Tetromino
 {
