@@ -3,17 +3,44 @@ using BlazorTetris.Infrastructure;
 
 // ReSharper disable UnusedVariable
 
-var app = new App();
+App app = new();
+IBlazorTetrisConfig config = new BlazorTetrisProductionConfig();
 
-var stagingEnvironment = new Environment
+
+
+// Environment appEnvironment = new()
+// {
+//     Account = config.AwsAppAccountId,
+//     Region = config.AwsAppRegionId
+// };
+//
+// StackProps blazorTetrisAppStackProps = new()
+// {
+//     Description = "Contains infrastructure for blazor tetris app.",
+//     Env = appEnvironment
+// };
+//
+// BlazorTetrisAppStack blazorTetrisAppStack = new(app, "BlazorTetrisApp", blazorTetrisAppStackProps, config);
+
+Environment dnsEnvironment = new()
 {
-    Account = "412433735452",
-    Region = "us-east-1"
+    Account = config.AwsDnsAccountId,
+    Region = config.AwsDnsRegionId
 };
 
-var blazorTetrisStack = new BlazorTetrisStack(app, "BlazorTetris", new StackProps
+DefaultStackSynthesizerProps dnsStackSynthesizerProps = new()
 {
-    Env = stagingEnvironment
-});
+    Qualifier = config.DnsQualifierId
+};
+DefaultStackSynthesizer synthesizer = new(dnsStackSynthesizerProps);
+
+StackProps blazorTetrisDnsStackProps = new()
+{
+    Description = "Contains dns settings for blazor tetris app.",
+    Env = dnsEnvironment,
+    Synthesizer = synthesizer
+};
+
+BlazorTetrisDnsStack blazorTetrisDnsStack = new(app, "BlazorTetrisDns", blazorTetrisDnsStackProps, config);
 
 app.Synth();
