@@ -112,7 +112,9 @@
     var context = await _canvas!.GetContext2DAsync();
     var nextPieceContext = await _nextPieceCanvas!.GetContext2DAsync();
     Grid grid = new(context, nextPieceContext, height, height / 2, 20, 10);
+    await grid.ClearGrid();
     _state = new State(grid, 20, 10);
+    await _state.Initialize();
     _state.StatsUpdatedEvent += UpdateState;
     await Js.InvokeVoidAsync("addEventListeners", DotNetObjectReference.Create(this));
   }

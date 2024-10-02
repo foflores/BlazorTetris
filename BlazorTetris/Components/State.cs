@@ -20,19 +20,16 @@ public class State
     public State(Grid grid, int rows, int columns)
     {
         _grid = grid;
-        _cells = new List<Cell>();
+        _cells = [];
         _currentTetromino = GenerateNewTetromino();
         _nextTetromino = GenerateNewTetromino();
         _timer = new System.Timers.Timer();
-        _timer.Elapsed += async (s, e) => await MoveDown();
+        _timer.Elapsed += async (_, _) => await MoveDown();
         _rows = rows;
         _columns = columns;
 
         _rowsCleared = 0;
         IsPaused = true;
-
-        _grid.ClearGrid();
-        _grid.DrawNextPiece(_nextTetromino);
     }
 
     private static Tetromino GenerateNewTetromino()
@@ -219,5 +216,10 @@ public class State
         _rowsCleared = 0;
         _timer.Interval = (double)1000 / Level;
         await StartGame();
+    }
+
+    public async Task Initialize()
+    {
+        await _grid.DrawNextPiece(_nextTetromino);
     }
 }

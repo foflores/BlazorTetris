@@ -2,7 +2,7 @@ namespace BlazorTetris.Components;
 
 public abstract class Tetromino
 {
-    public List<Cell> Cells { get; } = new();
+    public List<Cell> Cells { get; } = [];
     protected Rotation Rotation { get; set; } = Rotation.Up;
 
     public void MoveLeft()
@@ -23,4 +23,3 @@ public abstract class Tetromino
     }
     public abstract void Rotate();
 }
-
