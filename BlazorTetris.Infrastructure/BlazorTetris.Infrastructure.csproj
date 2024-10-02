@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.CDK.Lib" Version="2.152.0" />
-    <PackageReference Include="Amazon.JSII.Analyzers" Version="1.102.0" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.160.0" />
+    <PackageReference Include="Amazon.JSII.Analyzers" Version="1.103.1" />
   </ItemGroup>
 
 </Project>

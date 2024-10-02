@@ -9,7 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTetris", "BlazorTetri
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{23926090-E255-44C9-BAB9-62271D5DC041}"
 	ProjectSection(SolutionItems) = preProject
-		cdk.json = cdk.json
 		.gitignore = .gitignore
 		.gitattributes = .gitattributes
 		.github\workflows\build-and-deploy-staging.yml = .github\workflows\build-and-deploy-staging.yml
