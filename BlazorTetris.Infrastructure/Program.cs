@@ -3,10 +3,16 @@ using BlazorTetris.Infrastructure;
 
 // ReSharper disable UnusedVariable
 
+var currentAccountId = System.Environment.GetEnvironmentVariable("AWS_DEFAULT_ACCOUNT");
+var currentRegionId = System.Environment.GetEnvironmentVariable("AWS_DEFAULT_REGION");
+
+BlazorTetrisConfigResolver resolver = new(currentAccountId, currentRegionId);
+IBlazorTetrisConfig? config = resolver.GetConfig();
+
+if (config == null)
+    throw new System.ApplicationException("Could not load configuration.");
+
 App app = new();
-IBlazorTetrisConfig config = new BlazorTetrisProductionConfig();
-
-
 
 // Environment appEnvironment = new()
 // {
@@ -41,6 +47,6 @@ StackProps blazorTetrisDnsStackProps = new()
     Synthesizer = synthesizer
 };
 
-BlazorTetrisDnsStack blazorTetrisDnsStack = new(app, "BlazorTetrisDns", blazorTetrisDnsStackProps, config);
+BlazorTetrisDnsStack blazorTetrisDnsStack = new(app, config.DnsStackName, blazorTetrisDnsStackProps, config);
 
 app.Synth();
