@@ -72,7 +72,4 @@
 # Aws Cdk
 **/.cdk.staging
 **/cdk.out
-
-
-
-
+**/temp/

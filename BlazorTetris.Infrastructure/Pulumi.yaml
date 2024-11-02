@@ -1,0 +1,3 @@
+name: blazorTetris
+description: Infrastructure for blazor tetris game
+runtime: dotnet

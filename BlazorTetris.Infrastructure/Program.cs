@@ -1,52 +1,65 @@
-﻿using Amazon.CDK;
-using BlazorTetris.Infrastructure;
+﻿using BlazorTetris.Infrastructure.Environments;
+using Pulumi;
+using Pulumi.Aws;
+using Pulumi.Aws.Inputs;
 
 // ReSharper disable UnusedVariable
 
-var currentAccountId = System.Environment.GetEnvironmentVariable("AWS_DEFAULT_ACCOUNT");
-var currentRegionId = System.Environment.GetEnvironmentVariable("AWS_DEFAULT_REGION");
-
-BlazorTetrisConfigResolver resolver = new(currentAccountId, currentRegionId);
-IBlazorTetrisConfig? config = resolver.GetConfig();
-
-if (config == null)
-    throw new System.ApplicationException("Could not load configuration.");
-
-App app = new();
-
-// Environment appEnvironment = new()
-// {
-//     Account = config.AwsAppAccountId,
-//     Region = config.AwsAppRegionId
-// };
-//
-// StackProps blazorTetrisAppStackProps = new()
-// {
-//     Description = "Contains infrastructure for blazor tetris app.",
-//     Env = appEnvironment
-// };
-//
-// BlazorTetrisAppStack blazorTetrisAppStack = new(app, "BlazorTetrisApp", blazorTetrisAppStackProps, config);
-
-Environment dnsEnvironment = new()
+return await Deployment.RunAsync(() =>
 {
-    Account = config.AwsDnsAccountId,
-    Region = config.AwsDnsRegionId
-};
+    // Config
+    var config = new Pulumi.Config();
+    var managementId = config.Require("management-id");
+    var productionId = config.Require("production-id");
+    var developmentId = config.Require("development-id");
+    var managementRoleAdministratorArn = config.Require("management-roleAdministrator-arn");
+    var productionRoleAdministratorArn = config.Require("production-roleAdministrator-arn");
+    var developmentRoleAdministratorArn = config.Require("development-roleAdministrator-arn");
+    var managementZoneFavianFloresComId = config.Require("management-zoneFavianFloresCom-id");
+    var managementZoneFavianFloresNetId = config.Require("management-zoneFavianFloresNet-id");
 
-DefaultStackSynthesizerProps dnsStackSynthesizerProps = new()
-{
-    Qualifier = config.DnsQualifierId
-};
-DefaultStackSynthesizer synthesizer = new(dnsStackSynthesizerProps);
+    // Providers
+    var managementProvider = new Provider("blazorTetris-management-provider", new ProviderArgs
+    {
+        AllowedAccountIds = [ managementId ],
+        AssumeRole = new ProviderAssumeRoleArgs
+        {
+            RoleArn = managementRoleAdministratorArn,
+            SessionName = "pulumi-blazorTetris-deploy"
+        }
+    });
 
-StackProps blazorTetrisDnsStackProps = new()
-{
-    Description = "Contains dns settings for blazor tetris app.",
-    Env = dnsEnvironment,
-    Synthesizer = synthesizer
-};
+    var productionProvider = new Provider("blazorTetris-production-provider", new ProviderArgs
+    {
+        AllowedAccountIds = [ productionId ],
+        AssumeRole = new ProviderAssumeRoleArgs
+        {
+            RoleArn = productionRoleAdministratorArn,
+            SessionName = "pulumi-blazorTetris-deploy"
+        },
+    });
 
-BlazorTetrisDnsStack blazorTetrisDnsStack = new(app, config.DnsStackName, blazorTetrisDnsStackProps, config);
+    var developmentProvider = new Provider("blazorTetris-development-provider", new ProviderArgs
+    {
+        AllowedAccountIds = [ developmentId ],
+        AssumeRole = new ProviderAssumeRoleArgs
+        {
+            RoleArn = developmentRoleAdministratorArn,
+            SessionName = "pulumi-blazorTetris-deploy"
+        },
+    });
 
-app.Synth();
+    DevelopmentEnvironment developmentEnvironment = new(new DevelopmentEnvironmentArgs
+    {
+        ManagementProvider = managementProvider,
+        DevelopmentProvider = developmentProvider,
+        ManagementZoneFavianFloresNetId = managementZoneFavianFloresNetId
+    });
+
+    ProductionEnvironment productionEnvironment = new(new ProductionEnvironmentArgs
+    {
+        ManagementProvider = managementProvider,
+        ProductionProvider = productionProvider,
+        ManagementZoneFavianFloresComId = managementZoneFavianFloresComId
+    });
+});

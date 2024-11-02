@@ -1,0 +1,12 @@
+config:
+  aws:region: us-east-1
+  pulumi:disable-default-providers:
+    - '*'
+  blazorTetris:management-id: 888359517863
+  blazorTetris:production-id: 633067888675
+  blazorTetris:development-id: 412433735452
+  blazorTetris:management-roleAdministrator-arn: arn:aws:iam::888359517863:role/management-role-administrator-access-a3b4ecf
+  blazorTetris:production-roleAdministrator-arn: arn:aws:iam::633067888675:role/production-role-administrator-access-44bfede
+  blazorTetris:development-roleAdministrator-arn: arn:aws:iam::412433735452:role/development-role-administrator-access-0f78a70
+  blazorTetris:management-zoneFavianFloresCom-id: Z03430432LO3DJQ514ASU
+  blazorTetris:management-zoneFavianFloresNet-id: Z03362712861SYC3Q8412
