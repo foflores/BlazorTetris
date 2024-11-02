@@ -7,10 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTetris", "BlazorTetri
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{23926090-E255-44C9-BAB9-62271D5DC041}"
 	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
 		.gitattributes = .gitattributes
 		.github\workflows\build-and-deploy-staging.yml = .github\workflows\build-and-deploy-staging.yml
 		.github\workflows\build-and-deploy-production.yml = .github\workflows\build-and-deploy-production.yml
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTetris.Infrastructure", "BlazorTetris.Infrastructure\BlazorTetris.Infrastructure.csproj", "{D7211B18-F363-41B8-8411-5E61C9E9625F}"
