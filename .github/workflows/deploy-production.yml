@@ -13,7 +13,7 @@ jobs:
       - name: .NET Core setup
         uses: actions/setup-dotnet@v3.2.0
         with:
-          dotnet-version: '8.0.10'
+          dotnet-version: '8.0.403'
 
       - name: Restore dependencies
         run: dotnet restore
