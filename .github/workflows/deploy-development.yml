@@ -1,0 +1,38 @@
+name: deploy-development
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - name: checkout-main
+        uses: actions/checkout@v4.2.2
+
+      - name: setup-dotnet-core
+        uses: actions/setup-dotnet@v4.1.0
+        with:
+          dotnet-version: '8.0.10'
+
+      - name: restore-dependencies
+        run: dotnet restore
+
+      - name: build-project
+        run: dotnet publish -c Release -o ./publish
+        working-directory: ./BlazorTetris
+
+      - name: configure-aws
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::412433735452:role/infrastructure-development-roleIac-d1d1e60
+
+      - name: deploy
+        run: aws s3 sync ./publish/wwwroot s3://blazor-tetris-bucket20241023034605265200000001 --delete
+        working-directory: ./BlazorTetris
+
+      - name: invalidate-cdn-caches
+        run: aws cloudfront create-invalidation --distribution-id E1TIS51I2CR3QX --paths "/*"

@@ -23,6 +23,9 @@ public class ProductionEnvironmentArgs
 
 public class ProductionEnvironment
 {
+    public Bucket AppBucket { get; }
+    public Distribution Distribution { get; }
+
     public ProductionEnvironment(ProductionEnvironmentArgs args)
     {
           const string appDomain = "tetris.favianflores.com";
@@ -58,7 +61,7 @@ public class ProductionEnvironment
                 ValidationRecordFqdns = validationRecordFqdns
             }, new CustomResourceOptions { Provider = args.ProductionProvider });
 
-        var bucket = new Bucket("blazorTetris-production-bucket-1", new BucketArgs
+        AppBucket = new Bucket("blazorTetris-production-bucket-1", new BucketArgs
         {
             BucketPrefix = "blazor-tetris-bucket",
             ForceDestroy = true
@@ -72,7 +75,7 @@ public class ProductionEnvironment
             SigningProtocol = "sigv4"
         }, new CustomResourceOptions { Provider = args.ProductionProvider });
 
-        var distribution = new Distribution("blazorTetris-production-distribution-1", new DistributionArgs
+        Distribution = new Distribution("blazorTetris-production-distribution-1", new DistributionArgs
         {
             Aliases = [ appDomain ],
             CustomErrorResponses =
@@ -100,7 +103,7 @@ public class ProductionEnvironment
             {
                 new DistributionOriginArgs
                 {
-                    DomainName = bucket.BucketRegionalDomainName,
+                    DomainName = AppBucket.BucketRegionalDomainName,
                     OriginAccessControlId = originAccessControl.Id,
                     OriginId = "blazor-tetris-bucket-origin",
                 }
@@ -126,7 +129,7 @@ public class ProductionEnvironment
 
         var bucketPolicy = new BucketPolicy("blazorTetris-production-bucketPolicy-1", new BucketPolicyArgs
         {
-            Bucket = bucket.BucketName,
+            Bucket = AppBucket.BucketName,
             Policy = GetPolicyDocument.Invoke(new GetPolicyDocumentInvokeArgs
             {
                 Version = "2012-10-17",
@@ -144,13 +147,13 @@ public class ProductionEnvironment
                             }
                         ],
                         Actions = ["s3:GetObject"],
-                        Resources = [ bucket.Arn.Apply(x => $"{x}/*") ],
+                        Resources = [ AppBucket.Arn.Apply(x => $"{x}/*") ],
                         Conditions =
                         [
                             new GetPolicyDocumentStatementConditionInputArgs
                             {
                                 Test = "StringEquals",
-                                Values = distribution.Arn,
+                                Values = Distribution.Arn,
                                 Variable = "AWS:SourceArn"
                             }
                         ],
@@ -164,7 +167,7 @@ public class ProductionEnvironment
             Name = "tetris",
             Ttl = 300,
             Type = "CNAME",
-            Records = [ distribution.DomainName ],
+            Records = [ Distribution.DomainName ],
             ZoneId = args.ManagementZoneFavianFloresComId
         }, new CustomResourceOptions { Provider = args.ManagementProvider });
     }

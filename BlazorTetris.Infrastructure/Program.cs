@@ -1,4 +1,5 @@
-﻿using BlazorTetris.Infrastructure.Environments;
+﻿using System.Collections.Generic;
+using BlazorTetris.Infrastructure.Environments;
 using Pulumi;
 using Pulumi.Aws;
 using Pulumi.Aws.Inputs;
@@ -12,9 +13,9 @@ return await Deployment.RunAsync(() =>
     var managementId = config.Require("management-id");
     var productionId = config.Require("production-id");
     var developmentId = config.Require("development-id");
-    var managementRoleAdministratorArn = config.Require("management-roleAdministrator-arn");
-    var productionRoleAdministratorArn = config.Require("production-roleAdministrator-arn");
-    var developmentRoleAdministratorArn = config.Require("development-roleAdministrator-arn");
+    var managementRoleIacArn = config.Require("management-roleIac-arn");
+    var productionRoleIacArn = config.Require("production-roleIac-arn");
+    var developmentRoleIacArn = config.Require("development-roleIac-arn");
     var managementZoneFavianFloresComId = config.Require("management-zoneFavianFloresCom-id");
     var managementZoneFavianFloresNetId = config.Require("management-zoneFavianFloresNet-id");
 
@@ -24,7 +25,7 @@ return await Deployment.RunAsync(() =>
         AllowedAccountIds = [ managementId ],
         AssumeRole = new ProviderAssumeRoleArgs
         {
-            RoleArn = managementRoleAdministratorArn,
+            RoleArn = managementRoleIacArn,
             SessionName = "pulumi-blazorTetris-deploy"
         }
     });
@@ -34,7 +35,7 @@ return await Deployment.RunAsync(() =>
         AllowedAccountIds = [ productionId ],
         AssumeRole = new ProviderAssumeRoleArgs
         {
-            RoleArn = productionRoleAdministratorArn,
+            RoleArn = productionRoleIacArn,
             SessionName = "pulumi-blazorTetris-deploy"
         },
     });
@@ -44,7 +45,7 @@ return await Deployment.RunAsync(() =>
         AllowedAccountIds = [ developmentId ],
         AssumeRole = new ProviderAssumeRoleArgs
         {
-            RoleArn = developmentRoleAdministratorArn,
+            RoleArn = developmentRoleIacArn,
             SessionName = "pulumi-blazorTetris-deploy"
         },
     });
@@ -62,4 +63,12 @@ return await Deployment.RunAsync(() =>
         ProductionProvider = productionProvider,
         ManagementZoneFavianFloresComId = managementZoneFavianFloresComId
     });
+
+    return new Dictionary<string, object?>
+    {
+        ["production-bucketApp-name"] = productionEnvironment.AppBucket.BucketName,
+        ["development-bucketApp-name"] = developmentEnvironment.AppBucket.BucketName,
+        ["production-distribution-id"] = productionEnvironment.Distribution.Id,
+        ["development-distribution-id"] = developmentEnvironment.Distribution.Id
+    };
 });

@@ -8,8 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{23926090-E255-44C9-BAB9-62271D5DC041}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
-		.github\workflows\build-and-deploy-staging.yml = .github\workflows\build-and-deploy-staging.yml
-		.github\workflows\build-and-deploy-production.yml = .github\workflows\build-and-deploy-production.yml
+		.github\workflows\deploy-development.yml = .github\workflows\deploy-development.yml
+		.github\workflows\deploy-production.yml = .github\workflows\deploy-production.yml
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
