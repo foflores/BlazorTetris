@@ -154,7 +154,7 @@ public class State
         {
             _currentTetromino.Cells.ForEach(_cells.Add);
             await ClearRows();
-            _timer.Interval = (double)1000 / Level;
+            _timer.Interval = (double)500 / Level;
             _currentTetromino = _nextTetromino;
             _nextTetromino = GenerateNewTetromino();
             await _grid.DrawNextPiece(_nextTetromino);
