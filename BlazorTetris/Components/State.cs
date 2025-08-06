@@ -199,7 +199,7 @@ public class State
         }
 
         IsPaused = false;
-        _timer.Interval = (double)1000 / Level;
+        _timer.Interval = (double)500 / Level;
         _timer.Start();
     }
     public void PauseGame()
