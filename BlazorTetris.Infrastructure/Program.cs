@@ -20,55 +20,55 @@ return await Deployment.RunAsync(() =>
     var managementZoneFavianFloresNetId = config.Require("management-zoneFavianFloresNet-id");
 
     // Providers
-    var managementProvider = new Provider("blazorTetris-management-provider", new ProviderArgs
-    {
-        AllowedAccountIds = [ managementId ],
-        AssumeRole = new ProviderAssumeRoleArgs
-        {
-            RoleArn = managementRoleIacArn,
-            SessionName = "pulumi-blazorTetris-deploy"
-        }
-    });
-
-    var productionProvider = new Provider("blazorTetris-production-provider", new ProviderArgs
-    {
-        AllowedAccountIds = [ productionId ],
-        AssumeRole = new ProviderAssumeRoleArgs
-        {
-            RoleArn = productionRoleIacArn,
-            SessionName = "pulumi-blazorTetris-deploy"
-        },
-    });
-
-    var developmentProvider = new Provider("blazorTetris-development-provider", new ProviderArgs
-    {
-        AllowedAccountIds = [ developmentId ],
-        AssumeRole = new ProviderAssumeRoleArgs
-        {
-            RoleArn = developmentRoleIacArn,
-            SessionName = "pulumi-blazorTetris-deploy"
-        },
-    });
-
-    DevelopmentEnvironment developmentEnvironment = new(new DevelopmentEnvironmentArgs
-    {
-        ManagementProvider = managementProvider,
-        DevelopmentProvider = developmentProvider,
-        ManagementZoneFavianFloresNetId = managementZoneFavianFloresNetId
-    });
-
-    ProductionEnvironment productionEnvironment = new(new ProductionEnvironmentArgs
-    {
-        ManagementProvider = managementProvider,
-        ProductionProvider = productionProvider,
-        ManagementZoneFavianFloresComId = managementZoneFavianFloresComId
-    });
-
-    return new Dictionary<string, object?>
-    {
-        ["production-bucketApp-name"] = productionEnvironment.AppBucket.BucketName,
-        ["development-bucketApp-name"] = developmentEnvironment.AppBucket.BucketName,
-        ["production-distribution-id"] = productionEnvironment.Distribution.Id,
-        ["development-distribution-id"] = developmentEnvironment.Distribution.Id
-    };
+    // var managementProvider = new Provider("blazorTetris-management-provider", new ProviderArgs
+    // {
+    //     AllowedAccountIds = [ managementId ],
+    //     AssumeRoles = new ProviderAssumeRoleArgs
+    //     {
+    //         RoleArn = managementRoleIacArn,
+    //         SessionName = "pulumi-blazorTetris-deploy"
+    //     }
+    // });
+    //
+    // var productionProvider = new Provider("blazorTetris-production-provider", new ProviderArgs
+    // {
+    //     AllowedAccountIds = [ productionId ],
+    //     AssumeRoles = new ProviderAssumeRoleArgs
+    //     {
+    //         RoleArn = productionRoleIacArn,
+    //         SessionName = "pulumi-blazorTetris-deploy"
+    //     },
+    // });
+    //
+    // var developmentProvider = new Provider("blazorTetris-development-provider", new ProviderArgs
+    // {
+    //     AllowedAccountIds = [ developmentId ],
+    //     AssumeRoles = new ProviderAssumeRoleArgs
+    //     {
+    //         RoleArn = developmentRoleIacArn,
+    //         SessionName = "pulumi-blazorTetris-deploy"
+    //     },
+    // });
+    //
+    // DevelopmentEnvironment developmentEnvironment = new(new DevelopmentEnvironmentArgs
+    // {
+    //     ManagementProvider = managementProvider,
+    //     DevelopmentProvider = developmentProvider,
+    //     ManagementZoneFavianFloresNetId = managementZoneFavianFloresNetId
+    // });
+    //
+    // ProductionEnvironment productionEnvironment = new(new ProductionEnvironmentArgs
+    // {
+    //     ManagementProvider = managementProvider,
+    //     ProductionProvider = productionProvider,
+    //     ManagementZoneFavianFloresComId = managementZoneFavianFloresComId
+    // });
+    //
+    // return new Dictionary<string, object?>
+    // {
+    //     ["production-bucketApp-name"] = productionEnvironment.AppBucket.BucketName,
+    //     ["development-bucketApp-name"] = developmentEnvironment.AppBucket.BucketName,
+    //     ["production-distribution-id"] = productionEnvironment.Distribution.Id,
+    //     ["development-distribution-id"] = developmentEnvironment.Distribution.Id
+    // };
 });
