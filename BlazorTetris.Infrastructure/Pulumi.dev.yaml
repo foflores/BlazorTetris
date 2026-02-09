@@ -1,10 +1,8 @@
 config:
   pulumi:disable-default-providers: ["*"]
-  blazortetris:management-id: 888359517863
-  blazortetris:production-id: 633067888675
-  blazortetris:development-id: 412433735452
-  blazortetris:management-roleIac-arn: arn:aws:iam::888359517863:role/org-management-role-iac-81ebd7e
-  blazortetris:production-roleIac-arn: arn:aws:iam::633067888675:role/org-production-role-iac-d53f9bb
-  blazortetris:development-roleIac-arn: arn:aws:iam::412433735452:role/org-development-role-iac-43dcbd2
-  blazortetris:management-zoneFavianFloresCom-id: Z03430432LO3DJQ514ASU
-  blazortetris:management-zoneFavianFloresNet-id: Z03362712861SYC3Q8412
+  blazortetris:dns-account-id: 221082175187
+  blazortetris:dns-iac-role-arn: arn:aws:iam::221082175187:role/org-dns-role-iac-d6e37b3
+  blazortetris:env-account-id: 412433735452
+  blazortetris:env-iac-role-arn: arn:aws:iam::412433735452:role/org-development-role-iac-43dcbd2
+  blazortetris:main-zone-id: Z01245352CJ13PJJUPQK0
+  blazortetris:main-domain: tetris.favianflores.net

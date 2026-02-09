@@ -1,74 +1,53 @@
-﻿using System.Collections.Generic;
-using BlazorTetris.Infrastructure.Environments;
+﻿using BlazorTetris.Infrastructure.Components;
 using Pulumi;
-using Pulumi.Aws;
-using Pulumi.Aws.Inputs;
 
 // ReSharper disable UnusedVariable
 
 return await Deployment.RunAsync(() =>
 {
     // Config
-    var config = new Pulumi.Config();
-    var managementId = config.Require("management-id");
-    var productionId = config.Require("production-id");
-    var developmentId = config.Require("development-id");
-    var managementRoleIacArn = config.Require("management-roleIac-arn");
-    var productionRoleIacArn = config.Require("production-roleIac-arn");
-    var developmentRoleIacArn = config.Require("development-roleIac-arn");
-    var managementZoneFavianFloresComId = config.Require("management-zoneFavianFloresCom-id");
-    var managementZoneFavianFloresNetId = config.Require("management-zoneFavianFloresNet-id");
+    var prefix = $"{Deployment.Instance.ProjectName}-{Deployment.Instance.StackName}";
+    var config = new Config();
+    var mainZoneId = config.Require("main-zone-id");
+    var mainDomain = config.Require("main-domain");
 
-    // Providers
-    // var managementProvider = new Provider("blazorTetris-management-provider", new ProviderArgs
-    // {
-    //     AllowedAccountIds = [ managementId ],
-    //     AssumeRoles = new ProviderAssumeRoleArgs
-    //     {
-    //         RoleArn = managementRoleIacArn,
-    //         SessionName = "pulumi-blazorTetris-deploy"
-    //     }
-    // });
-    //
-    // var productionProvider = new Provider("blazorTetris-production-provider", new ProviderArgs
-    // {
-    //     AllowedAccountIds = [ productionId ],
-    //     AssumeRoles = new ProviderAssumeRoleArgs
-    //     {
-    //         RoleArn = productionRoleIacArn,
-    //         SessionName = "pulumi-blazorTetris-deploy"
-    //     },
-    // });
-    //
-    // var developmentProvider = new Provider("blazorTetris-development-provider", new ProviderArgs
-    // {
-    //     AllowedAccountIds = [ developmentId ],
-    //     AssumeRoles = new ProviderAssumeRoleArgs
-    //     {
-    //         RoleArn = developmentRoleIacArn,
-    //         SessionName = "pulumi-blazorTetris-deploy"
-    //     },
-    // });
-    //
-    // DevelopmentEnvironment developmentEnvironment = new(new DevelopmentEnvironmentArgs
-    // {
-    //     ManagementProvider = managementProvider,
-    //     DevelopmentProvider = developmentProvider,
-    //     ManagementZoneFavianFloresNetId = managementZoneFavianFloresNetId
-    // });
-    //
-    // ProductionEnvironment productionEnvironment = new(new ProductionEnvironmentArgs
-    // {
-    //     ManagementProvider = managementProvider,
-    //     ProductionProvider = productionProvider,
-    //     ManagementZoneFavianFloresComId = managementZoneFavianFloresComId
-    // });
-    //
-    // return new Dictionary<string, object?>
-    // {
-    //     ["production-bucketApp-name"] = productionEnvironment.AppBucket.BucketName,
-    //     ["development-bucketApp-name"] = developmentEnvironment.AppBucket.BucketName,
-    //     ["production-distribution-id"] = productionEnvironment.Distribution.Id,
-    //     ["development-distribution-id"] = developmentEnvironment.Distribution.Id
-    // };
+    var providers = new Providers(prefix, new ProvidersArgs
+    {
+        DnsAccountId = config.Require("dns-account-id"),
+        DnsIacRoleArn = config.Require("dns-iac-role-arn"),
+        EnvAccountId = config.Require("env-account-id"),
+        EnvIacRoleArn = config.Require("env-iac-role-arn")
+    });
+
+    var buckets = new Buckets(prefix, new BucketsArgs
+    {
+        EnvProvider = providers.EnvProvider
+    });
+
+    var validatedCertificates = new ValidatedCertificates(prefix, new ValidatedCertificatesArgs
+    {
+        DnsProvider = providers.DnsProvider,
+        EnvProvider = providers.EnvProvider,
+        PrimaryDomain = mainDomain,
+        SubjectAlternativeNames = new InputList<string>(),
+        HostedZoneId = mainZoneId
+    });
+
+    var distributions = new Distributions(prefix, new DistributionsArgs
+    {
+        EnvProvider = providers.EnvProvider,
+        SourceBucket = buckets.SourceBucket,
+        MainCertificate = validatedCertificates.MainCertificate,
+        MainCertificateValidation = validatedCertificates.MainCertificateValidation,
+        MainDistributionDomain = mainDomain
+    });
+
+    buckets.CreateSourceBucketPolicy(prefix, distributions.MainDistribution);
+
+    var records = new Records(prefix, new RecordsArgs
+    {
+        DnsProvider = providers.DnsProvider,
+        MainDistribution = distributions.MainDistribution,
+        MainZoneId = mainZoneId
+    });
 });
