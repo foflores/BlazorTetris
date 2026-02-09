@@ -1,17 +1,17 @@
-name: deploy-production
+name: app-deploy-dev
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  app-deploy-dev:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Main
-        uses: actions/checkout@v3.5.2
+      - name: Checkout main branch
+        uses: actions/checkout@v6.0.1
 
-      - name: .NET Core setup
-        uses: actions/setup-dotnet@v3.2.0
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: '8.0.403'
 
@@ -22,17 +22,17 @@ jobs:
         run: dotnet publish -c Release -o ./publish
         working-directory: ./BlazorTetris
 
-      - name: Configure aws
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::633067888675:role/infrastructure-production-roleIac-f6bb1a9
+          role-to-assume: arn:aws:iam::412433735452:role/org-development-role-iac-43dcbd2
 
       - name: Deploy to aws
-        run: aws s3 sync ./publish/wwwroot s3://blazor-tetris-bucket20241024043754786000000001 --delete
+        run: aws s3 sync ./publish/wwwroot s3://blazortetris-dev-bucket-source-c76a7dc --delete
         working-directory: ./BlazorTetris
 
       - name: Invalidate cdn
-        run: aws cloudfront create-invalidation --distribution-id EB770A3529SNW --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id E3L9M54U7AHHOS --paths "/*"

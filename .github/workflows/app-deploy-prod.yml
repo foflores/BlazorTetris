@@ -1,0 +1,38 @@
+name: app-deploy-prod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  app-deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v6.0.1
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5.1.0
+        with:
+          dotnet-version: '8.0.403'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet publish -c Release -o ./publish
+        working-directory: ./BlazorTetris
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::633067888675:role/org-production-role-iac-d53f9bb
+
+      - name: Deploy to aws
+        run: aws s3 sync ./publish/wwwroot s3://blazortetris-prod-bucket-source-0347b53 --delete
+        working-directory: ./BlazorTetris
+
+      - name: Invalidate cdn
+        run: aws cloudfront create-invalidation --distribution-id EDZIHJ9EBO103 --paths "/*"

@@ -1,4 +1,5 @@
-﻿using BlazorTetris.Infrastructure.Components;
+﻿using System.Collections.Generic;
+using BlazorTetris.Infrastructure.Components;
 using Pulumi;
 
 // ReSharper disable UnusedVariable
@@ -50,4 +51,10 @@ return await Deployment.RunAsync(() =>
         MainDistribution = distributions.MainDistribution,
         MainZoneId = mainZoneId
     });
+
+    return new Dictionary<string, object?>
+    {
+        [$"{prefix}-bucket-source-name"] = buckets.SourceBucket.BucketName,
+        [$"{prefix}-distribution-main-id"] = distributions.MainDistribution.Id
+    };
 });
