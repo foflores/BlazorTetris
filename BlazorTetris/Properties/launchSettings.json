@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "https": {
+    "BlazorTetris": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
