@@ -7,30 +7,30 @@ using Pulumi.Aws.Route53;
 
 namespace BlazorTetris.Infrastructure.Components;
 
-public class ValidatedCertificatesArgs
+public class CertificatesArgs
 {
     public required Provider DnsProvider { get; init; }
     public required Provider EnvProvider { get; init; }
-    public required Input<string> PrimaryDomain { get; init; }
+    public required Input<string> Domain { get; init; }
     public required InputList<string> SubjectAlternativeNames { get; init; }
-    public required Input<string> HostedZoneId { get; init; }
+    public required Input<string> ZoneId { get; init; }
 }
 
-public class ValidatedCertificates
+public class Certificates
 {
-    public Certificate MainCertificate { get; }
-    public CertificateValidation MainCertificateValidation { get; }
+    public Certificate Certificate { get; }
+    public CertificateValidation CertificateValidation { get; }
 
-    public ValidatedCertificates(string prefix, ValidatedCertificatesArgs args)
+    public Certificates(string prefix, CertificatesArgs args)
     {
-        MainCertificate = new Certificate($"{prefix}-certicate-main", new CertificateArgs
+        Certificate = new Certificate($"{prefix}-certicate-main", new CertificateArgs
         {
-            DomainName = args.PrimaryDomain,
+            DomainName = args.Domain,
             SubjectAlternativeNames = args.SubjectAlternativeNames,
             ValidationMethod = "DNS"
         }, new CustomResourceOptions { Provider = args.EnvProvider });
 
-        var records = MainCertificate.DomainValidationOptions.Apply(domainValidationOptions =>
+        var records = Certificate.DomainValidationOptions.Apply(domainValidationOptions =>
         {
             List<Record> records = [];
             foreach (var option in domainValidationOptions)
@@ -50,16 +50,16 @@ public class ValidatedCertificates
                     Records = [ option.ResourceRecordValue ],
                     Ttl = 60,
                     Type = option.ResourceRecordType,
-                    ZoneId = args.HostedZoneId
+                    ZoneId = args.ZoneId
                 }, new CustomResourceOptions { Provider = args.DnsProvider }));
             }
 
             return Output.All(records.Select(y => y.Fqdn));
         });
 
-        MainCertificateValidation = new CertificateValidation($"{prefix}-certificatevalidation-main", new CertificateValidationArgs
+        CertificateValidation = new CertificateValidation($"{prefix}-certificatevalidation-main", new CertificateValidationArgs
         {
-            CertificateArn = MainCertificate.Arn,
+            CertificateArn = Certificate.Arn,
             ValidationRecordFqdns = records
         }, new CustomResourceOptions { Provider = args.EnvProvider });
     }

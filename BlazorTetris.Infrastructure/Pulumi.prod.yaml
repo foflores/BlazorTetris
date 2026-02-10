@@ -4,5 +4,5 @@ config:
   blazortetris:dns-iac-role-arn: arn:aws:iam::221082175187:role/org-dns-role-iac-d6e37b3
   blazortetris:env-account-id: 633067888675
   blazortetris:env-iac-role-arn: arn:aws:iam::633067888675:role/org-production-role-iac-d53f9bb
-  blazortetris:main-zone-id: Z09373552A3ZF6Q4ON5ZA
-  blazortetris:main-domain: tetris.favianflores.com
+  blazortetris:zone-id: Z09373552A3ZF6Q4ON5ZA
+  blazortetris:domain: tetris.favianflores.com

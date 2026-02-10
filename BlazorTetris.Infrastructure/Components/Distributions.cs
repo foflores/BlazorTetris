@@ -11,19 +11,19 @@ public class DistributionsArgs
 {
     public required Provider EnvProvider { get; init; }
     public required Bucket SourceBucket { get; init; }
-    public required Certificate MainCertificate { get; init; }
-    public required CertificateValidation MainCertificateValidation { get; init; }
-    public required Input<string> MainDistributionDomain { get; init; }
+    public required Certificate Certificate { get; init; }
+    public required CertificateValidation CertificateValidation { get; init; }
+    public required Input<string> Domain { get; init; }
 }
 
 public class Distributions
 {
-    public Distribution MainDistribution { get; }
-    public OriginAccessControl MainOriginAccessControl { get; }
+    public Distribution Distribution { get; }
+    public OriginAccessControl OriginAccessControl { get; }
 
     public Distributions(string prefix, DistributionsArgs args)
     {
-        MainOriginAccessControl = new OriginAccessControl($"{prefix}-originaccesscontrol-main", new OriginAccessControlArgs
+        OriginAccessControl = new OriginAccessControl($"{prefix}-originaccesscontrol-main", new OriginAccessControlArgs
         {
             OriginAccessControlOriginType = "s3",
             SigningBehavior = "always",
@@ -32,9 +32,9 @@ public class Distributions
 
         var originId = $"{prefix}-origin-main";
 
-        MainDistribution = new Distribution($"{prefix}-distribution-main", new DistributionArgs
+        Distribution = new Distribution($"{prefix}-distribution-main", new DistributionArgs
         {
-            Aliases = [ args.MainDistributionDomain ],
+            Aliases = [ args.Domain ],
             CustomErrorResponses =
             [
                 new DistributionCustomErrorResponseArgs
@@ -61,7 +61,7 @@ public class Distributions
                 new DistributionOriginArgs
                 {
                     DomainName = args.SourceBucket.BucketRegionalDomainName,
-                    OriginAccessControlId = MainOriginAccessControl.Id,
+                    OriginAccessControlId = OriginAccessControl.Id,
                     OriginId = originId,
                 }
             },
@@ -77,11 +77,11 @@ public class Distributions
             RetainOnDelete = false,
             ViewerCertificate = new DistributionViewerCertificateArgs
             {
-                AcmCertificateArn = args.MainCertificate.Arn,
+                AcmCertificateArn = args.Certificate.Arn,
                 SslSupportMethod = "sni-only",
                 MinimumProtocolVersion = "TLSv1.2_2021"
             },
             WaitForDeployment = false,
-        }, new CustomResourceOptions { Provider = args.EnvProvider, DependsOn = args.MainCertificateValidation });
+        }, new CustomResourceOptions { Provider = args.EnvProvider, DependsOn = args.CertificateValidation });
     }
 }

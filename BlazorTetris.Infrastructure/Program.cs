@@ -9,8 +9,8 @@ return await Deployment.RunAsync(() =>
     // Config
     var prefix = $"{Deployment.Instance.ProjectName}-{Deployment.Instance.StackName}";
     var config = new Config();
-    var mainZoneId = config.Require("main-zone-id");
-    var mainDomain = config.Require("main-domain");
+    var zoneId = config.Require("zone-id");
+    var domain = config.Require("domain");
 
     var providers = new Providers(prefix, new ProvidersArgs
     {
@@ -25,36 +25,36 @@ return await Deployment.RunAsync(() =>
         EnvProvider = providers.EnvProvider
     });
 
-    var validatedCertificates = new ValidatedCertificates(prefix, new ValidatedCertificatesArgs
+    var certificates = new Certificates(prefix, new CertificatesArgs
     {
         DnsProvider = providers.DnsProvider,
         EnvProvider = providers.EnvProvider,
-        PrimaryDomain = mainDomain,
+        Domain = domain,
         SubjectAlternativeNames = new InputList<string>(),
-        HostedZoneId = mainZoneId
+        ZoneId = zoneId
     });
 
     var distributions = new Distributions(prefix, new DistributionsArgs
     {
         EnvProvider = providers.EnvProvider,
         SourceBucket = buckets.SourceBucket,
-        MainCertificate = validatedCertificates.MainCertificate,
-        MainCertificateValidation = validatedCertificates.MainCertificateValidation,
-        MainDistributionDomain = mainDomain
+        Certificate = certificates.Certificate,
+        CertificateValidation = certificates.CertificateValidation,
+        Domain = domain
     });
 
-    buckets.CreateSourceBucketPolicy(prefix, distributions.MainDistribution);
+    buckets.CreateSourceBucketPolicy(distributions.Distribution);
 
     var records = new Records(prefix, new RecordsArgs
     {
         DnsProvider = providers.DnsProvider,
-        MainDistribution = distributions.MainDistribution,
-        MainZoneId = mainZoneId
+        Distribution = distributions.Distribution,
+        ZoneId = zoneId
     });
 
     return new Dictionary<string, object?>
     {
-        [$"{prefix}-bucket-source-name"] = buckets.SourceBucket.BucketName,
-        [$"{prefix}-distribution-main-id"] = distributions.MainDistribution.Id
+        [$"{prefix}-bucket-source-arn"] = buckets.SourceBucket.Arn,
+        [$"{prefix}-distribution-main-arn"] = distributions.Distribution.Arn
     };
 });

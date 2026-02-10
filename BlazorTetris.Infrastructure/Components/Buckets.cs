@@ -15,6 +15,7 @@ public class BucketsArgs
 public class Buckets
 {
     private readonly BucketsArgs _args;
+    private readonly string _prefix;
 
     public Bucket SourceBucket { get; }
     public BucketPolicy? SourceBucketPolicy { get; private set; }
@@ -22,15 +23,17 @@ public class Buckets
     public Buckets(string prefix, BucketsArgs args)
     {
         _args = args;
+        _prefix = prefix;
+
         SourceBucket = new Bucket($"{prefix}-bucket-source", new BucketArgs
         {
             ForceDestroy = true
         }, new CustomResourceOptions { Provider = args.EnvProvider });
     }
 
-    public void CreateSourceBucketPolicy(string prefix, Distribution mainDistribution)
+    public void CreateSourceBucketPolicy(Distribution distribution)
     {
-        SourceBucketPolicy = new BucketPolicy($"{prefix}-bucketPolicy-source", new BucketPolicyArgs
+        SourceBucketPolicy = new BucketPolicy($"{_prefix}-bucketPolicy-source", new BucketPolicyArgs
         {
             Bucket = SourceBucket.BucketName,
             Policy = GetPolicyDocument.Invoke(new GetPolicyDocumentInvokeArgs
@@ -56,7 +59,7 @@ public class Buckets
                             new GetPolicyDocumentStatementConditionInputArgs
                             {
                                 Test = "StringEquals",
-                                Values = mainDistribution.Arn,
+                                Values = distribution.Arn,
                                 Variable = "AWS:SourceArn"
                             }
                         ],
