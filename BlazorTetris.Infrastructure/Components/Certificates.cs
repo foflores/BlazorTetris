@@ -23,7 +23,8 @@ public class Certificates
 
     public Certificates(string prefix, CertificatesArgs args)
     {
-        Certificate = new Certificate($"{prefix}-certicate-main", new CertificateArgs
+        var count = 1;
+        Certificate = new Certificate($"{prefix}-certicate", new CertificateArgs
         {
             DomainName = args.Domain,
             SubjectAlternativeNames = args.SubjectAlternativeNames,
@@ -43,7 +44,7 @@ public class Certificates
                     continue;
                 }
 
-                records.Add(new Record($"{prefix}-record-dnsvalidation-{option.DomainName}", new RecordArgs
+                records.Add(new Record($"{prefix}-record-dnsval-{count:00}", new RecordArgs
                 {
                     AllowOverwrite = true,
                     Name = option.ResourceRecordName,
@@ -52,12 +53,13 @@ public class Certificates
                     Type = option.ResourceRecordType,
                     ZoneId = args.ZoneId
                 }, new CustomResourceOptions { Provider = args.DnsProvider }));
+                count++;
             }
 
             return Output.All(records.Select(y => y.Fqdn));
         });
 
-        CertificateValidation = new CertificateValidation($"{prefix}-certificatevalidation-main", new CertificateValidationArgs
+        CertificateValidation = new CertificateValidation($"{prefix}-certval", new CertificateValidationArgs
         {
             CertificateArn = Certificate.Arn,
             ValidationRecordFqdns = records

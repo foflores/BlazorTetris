@@ -10,6 +10,7 @@ public class RecordsArgs
     public required Provider DnsProvider { get; init; }
     public required Distribution Distribution { get; init; }
     public required string ZoneId { get; init; }
+    public required string RecordName { get; init; }
 }
 
 public class Records
@@ -17,9 +18,9 @@ public class Records
     public Record TetrisRecord { get; }
     public Records(string prefix, RecordsArgs args)
     {
-        TetrisRecord = new Record($"{prefix}-record-main", new RecordArgs
+        TetrisRecord = new Record($"{prefix}-record", new RecordArgs
         {
-            Name = "tetris",
+            Name = args.RecordName,
             Ttl = 300,
             Type = "CNAME",
             Records = [ args.Distribution.DomainName ],

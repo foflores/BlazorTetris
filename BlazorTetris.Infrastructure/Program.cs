@@ -11,6 +11,7 @@ return await Deployment.RunAsync(() =>
     var config = new Config();
     var zoneId = config.Require("zone-id");
     var domain = config.Require("domain");
+    var recordName = config.Require("record-name");
 
     var providers = new Providers(prefix, new ProvidersArgs
     {
@@ -49,7 +50,8 @@ return await Deployment.RunAsync(() =>
     {
         DnsProvider = providers.DnsProvider,
         Distribution = distributions.Distribution,
-        ZoneId = zoneId
+        ZoneId = zoneId,
+        RecordName = recordName
     });
 
     return new Dictionary<string, object?>
