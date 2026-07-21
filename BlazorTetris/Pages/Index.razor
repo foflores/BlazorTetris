@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using System.Reflection
 @using BlazorTetris.Components;
 @using Excubo.Blazor.Canvas
 @inject IJSRuntime Js
@@ -49,7 +48,7 @@
       <h4>Controls:</h4>
       <h5>- Left, right, down arrow keys to move</h5>
       <h5>- Up arrow key to rotate</h5>
-      <h5>- Spacebar to drop the piece instantly</h5>
+      <h5>- Space bar to drop the piece instantly</h5>
     </div>
   </div>
   <div class="col-7">
@@ -58,11 +57,7 @@
     </div>
   </div>
 </div>
-<div class="row justify-content-center pt-5">
-  <div class="col">
-    <p class="text-info text-center">Version @AppVersion</p>
-  </div>
-</div>
+
 
 <script>
   function buildCanvas() {
@@ -107,11 +102,6 @@
   private int Score => _state?.Score ?? 0;
   private bool IsGameOver => _state?.IsGameOver ?? false;
   private bool IsPaused => _state?.IsPaused ?? true;
-
-  private static readonly string AppVersion =
-    Assembly.GetExecutingAssembly()
-      .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-      .InformationalVersion ?? "1.0.0";
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {

@@ -1,5 +1,22 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Reflection
+@inherits LayoutComponentBase
 
-<main class="container">
+<div class="container min-vh-100 d-flex flex-column">
+  <main class="row flex-grow-1">
     @Body
-</main>
+  </main>
+  <footer class="row">
+    <div class="col">
+      <p class="text-info text-center fs-6">Version @AppVersion</p>
+    </div>
+  </footer>
+</div>
+
+@code {
+
+  private static readonly string AppVersion =
+    Assembly.GetExecutingAssembly()
+      .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+      .InformationalVersion ?? "1.0.0";
+
+}
