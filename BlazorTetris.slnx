@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/SolutionFiles/">
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="BlazorTetris.Infrastructure/BlazorTetris.Infrastructure.csproj" />
+  <Project Path="BlazorTetris/BlazorTetris.csproj" />
+</Solution>
