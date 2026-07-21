@@ -10,6 +10,10 @@
         <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.96" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.10" PrivateAssets="all" />
+        <PackageReference Include="Nerdbank.GitVersioning" Version="3.10.91">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
