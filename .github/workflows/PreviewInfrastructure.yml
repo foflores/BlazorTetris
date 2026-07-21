@@ -2,10 +2,19 @@ name: Preview Infrastructure
 
 on:
   workflow_dispatch:
+    inputs:
+      env:
+        description: 'Target Environment'
+        required: true
+        type: choice
+        options:
+          - Dev
+          - Prod
 
 jobs:
   Deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.env }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
