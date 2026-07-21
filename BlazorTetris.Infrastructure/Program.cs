@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using BlazorTetris.Infrastructure.Components;
 using Pulumi;
 
@@ -6,7 +7,6 @@ using Pulumi;
 
 return await Deployment.RunAsync(() =>
 {
-    // Config
     var prefix = $"{Deployment.Instance.ProjectName}-{Deployment.Instance.StackName}";
     var config = new Config();
     var zoneId = config.Require("zone-id");
@@ -57,6 +57,9 @@ return await Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         [$"{prefix}-bucket-source-arn"] = buckets.SourceBucket.Arn,
-        [$"{prefix}-distribution-main-arn"] = distributions.Distribution.Arn
+        [$"{prefix}-distribution-main-arn"] = distributions.Distribution.Arn,
+        [$"{prefix}-version"] = Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "1.0.0"
     };
 });
