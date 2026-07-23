@@ -12,7 +12,7 @@ on:
           - Prod
 
 jobs:
-  Deploy:
+  Preview Infrastructure:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
     steps:
