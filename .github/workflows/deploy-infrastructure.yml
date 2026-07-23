@@ -1,4 +1,4 @@
-name: Preview Infrastructure
+name: Deploy Infrastructure
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
           - Prod
 
 jobs:
-  Preview Infrastructure:
+  deploy-infrastructure:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
     steps:
@@ -28,10 +28,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Run pulumi preview
+      - name: Run pulumi update
         uses: pulumi/actions@v7
         with:
-          command: preview
+          command: update
           stack-name: ${{ vars.PULUMI_STACK_NAME }}
           work-dir: ./BlazorTetris.Infrastructure
           comment-on-summary: true
