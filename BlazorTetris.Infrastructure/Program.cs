@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BlazorTetris.Infrastructure.Components;
 using Pulumi;
 using Pulumi.Aws;
 using Pulumi.Aws.Acm;
@@ -23,14 +22,6 @@ return await Deployment.RunAsync(() =>
     var zoneId = config.Require("zone-id");
     var domain = config.Require("domain");
     var recordName = config.Require("record-name");
-
-    var providers = new Providers(prefix, new ProvidersArgs
-    {
-        DnsAccountId = config.Require("dns-account-id"),
-        DnsIacRoleArn = config.Require("dns-iac-role-arn"),
-        EnvAccountId = config.Require("env-account-id"),
-        EnvIacRoleArn = config.Require("env-iac-role-arn")
-    });
 
     var awsAccountId = config.Require("aws-account-id");
     var awsIacRoleArn = config.Require("aws-iac-role-arn");
