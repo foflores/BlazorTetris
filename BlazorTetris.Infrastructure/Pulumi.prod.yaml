@@ -7,3 +7,6 @@ config:
   blazortetris:zone-id: Z09373552A3ZF6Q4ON5ZA
   blazortetris:domain: blazortetris.favianflores.com
   blazortetris:record-name: blazortetris
+  blazortetris:aws-account-id: 888359517863
+  blazortetris:aws-iac-role-arn: arn:aws:iam::888359517863:role/org-management-role-iac-81ebd7e
+  blazortetris:aws-zone-id: Z014022129B2KHPOMXERO

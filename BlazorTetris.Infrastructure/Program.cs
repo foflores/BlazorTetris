@@ -2,6 +2,10 @@
 using System.Reflection;
 using BlazorTetris.Infrastructure.Components;
 using Pulumi;
+using Pulumi.Aws;
+using Pulumi.Aws.Inputs;
+using Pulumi.Aws.Route53;
+using Config = Pulumi.Config;
 
 // ReSharper disable UnusedVariable
 
@@ -12,6 +16,9 @@ return await Deployment.RunAsync(() =>
     var zoneId = config.Require("zone-id");
     var domain = config.Require("domain");
     var recordName = config.Require("record-name");
+    var awsAccountId = config.Require("aws-account-id");
+    var awsIacRoleArn = config.Require("aws-iac-role-arn");
+    var awsZoneId = config.Require("aws-zone-id");
 
     var providers = new Providers(prefix, new ProvidersArgs
     {
@@ -19,6 +26,17 @@ return await Deployment.RunAsync(() =>
         DnsIacRoleArn = config.Require("dns-iac-role-arn"),
         EnvAccountId = config.Require("env-account-id"),
         EnvIacRoleArn = config.Require("env-iac-role-arn")
+    });
+
+    var provider = new Provider($"{prefix}-provider", new ProviderArgs
+    {
+        AllowedAccountIds = [ awsAccountId ],
+        AssumeRoles = new ProviderAssumeRoleArgs
+        {
+            RoleArn = awsIacRoleArn,
+            SessionName = "pulumi-deploy"
+        },
+        Region = "us-east-1"
     });
 
     var buckets = new Buckets(prefix, new BucketsArgs
@@ -53,6 +71,15 @@ return await Deployment.RunAsync(() =>
         ZoneId = zoneId,
         RecordName = recordName
     });
+
+    var blazorTetrisRecord = new Record($"{prefix}-record-blazortetris", new RecordArgs
+    {
+        Name = "blazortetris",
+        Ttl = 300,
+        Type = "CNAME",
+        Records = [ distributions.Distribution.DomainName ],
+        ZoneId = awsZoneId
+    }, new CustomResourceOptions { Provider = provider });
 
     return new Dictionary<string, object?>
     {
