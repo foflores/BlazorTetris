@@ -32,20 +32,6 @@ return await Deployment.RunAsync(() =>
         EnvIacRoleArn = config.Require("env-iac-role-arn")
     });
 
-    var buckets = new Buckets(prefix, new BucketsArgs
-    {
-        EnvProvider = providers.EnvProvider
-    });
-
-    var distributions = new Distributions(prefix, new DistributionsArgs
-    {
-        EnvProvider = providers.EnvProvider,
-        SourceBucket = buckets.SourceBucket,
-        Domain = domain
-    });
-
-    buckets.CreateSourceBucketPolicy(distributions.Distribution);
-
     var awsAccountId = config.Require("aws-account-id");
     var awsIacRoleArn = config.Require("aws-iac-role-arn");
     var awsZoneId = config.Require("aws-zone-id");
@@ -118,6 +104,7 @@ return await Deployment.RunAsync(() =>
 
     var distribution = new Distribution($"{prefix}-distribution", new DistributionArgs
     {
+        Aliases = [ domain ],
         CustomErrorResponses =
         [
             new DistributionCustomErrorResponseArgs
@@ -160,10 +147,12 @@ return await Deployment.RunAsync(() =>
         RetainOnDelete = false,
         ViewerCertificate = new DistributionViewerCertificateArgs
         {
-            CloudfrontDefaultCertificate = true
+            AcmCertificateArn = certificate.Arn,
+            SslSupportMethod = "sni-only",
+            MinimumProtocolVersion = "TLSv1.2_2021"
         },
         WaitForDeployment = false,
-    }, new CustomResourceOptions { Provider = provider, DependsOn = distributions.Distribution });
+    }, new CustomResourceOptions { Provider = provider });
 
     var bucketPolicy = new BucketPolicy($"{prefix}-bucketpolicy", new BucketPolicyArgs
     {
@@ -200,7 +189,7 @@ return await Deployment.RunAsync(() =>
         }, new InvokeOptions { Provider = provider }).Apply(x => x.Json)
     }, new CustomResourceOptions { Provider = provider });
 
-    var record = new Record($"{prefix}-record-blazortetris", new RecordArgs
+    var record = new Record($"{prefix}-record", new RecordArgs
     {
         Name = "blazortetris",
         Ttl = 300,
