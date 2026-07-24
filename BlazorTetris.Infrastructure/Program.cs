@@ -3,8 +3,13 @@ using System.Reflection;
 using BlazorTetris.Infrastructure.Components;
 using Pulumi;
 using Pulumi.Aws;
+using Pulumi.Aws.CloudFront;
+using Pulumi.Aws.CloudFront.Inputs;
+using Pulumi.Aws.Iam;
+using Pulumi.Aws.Iam.Inputs;
 using Pulumi.Aws.Inputs;
 using Pulumi.Aws.Route53;
+using Pulumi.Aws.S3;
 using Config = Pulumi.Config;
 
 // ReSharper disable UnusedVariable
@@ -16,9 +21,6 @@ return await Deployment.RunAsync(() =>
     var zoneId = config.Require("zone-id");
     var domain = config.Require("domain");
     var recordName = config.Require("record-name");
-    var awsAccountId = config.Require("aws-account-id");
-    var awsIacRoleArn = config.Require("aws-iac-role-arn");
-    var awsZoneId = config.Require("aws-zone-id");
 
     var providers = new Providers(prefix, new ProvidersArgs
     {
@@ -26,17 +28,6 @@ return await Deployment.RunAsync(() =>
         DnsIacRoleArn = config.Require("dns-iac-role-arn"),
         EnvAccountId = config.Require("env-account-id"),
         EnvIacRoleArn = config.Require("env-iac-role-arn")
-    });
-
-    var provider = new Provider($"{prefix}-provider", new ProviderArgs
-    {
-        AllowedAccountIds = [ awsAccountId ],
-        AssumeRoles = new ProviderAssumeRoleArgs
-        {
-            RoleArn = awsIacRoleArn,
-            SessionName = "pulumi-deploy"
-        },
-        Region = "us-east-1"
     });
 
     var buckets = new Buckets(prefix, new BucketsArgs
@@ -72,14 +63,127 @@ return await Deployment.RunAsync(() =>
         RecordName = recordName
     });
 
-    var blazorTetrisRecord = new Record($"{prefix}-record-blazortetris", new RecordArgs
+    var awsAccountId = config.Require("aws-account-id");
+    var awsIacRoleArn = config.Require("aws-iac-role-arn");
+    var awsZoneId = config.Require("aws-zone-id");
+
+    var provider = new Provider($"{prefix}-provider", new ProviderArgs
+    {
+        AllowedAccountIds = [ awsAccountId ],
+        AssumeRoles = new ProviderAssumeRoleArgs
+        {
+            RoleArn = awsIacRoleArn,
+            SessionName = "pulumi-deploy"
+        },
+        Region = "us-east-1"
+    });
+
+    var bucket = new Bucket($"{prefix}-bucket", new BucketArgs
+    {
+        ForceDestroy = true
+    }, new CustomResourceOptions { Provider = provider });
+
+    var originAccessControl = new OriginAccessControl($"{prefix}-originaccesscontrol", new OriginAccessControlArgs
+    {
+        OriginAccessControlOriginType = "s3",
+        SigningBehavior = "always",
+        SigningProtocol = "sigv4"
+    }, new CustomResourceOptions { Provider = provider });
+
+    var originId = $"{prefix}-origin";
+
+    var distribution = new Distribution($"{prefix}-distribution", new DistributionArgs
+    {
+        CustomErrorResponses =
+        [
+            new DistributionCustomErrorResponseArgs
+            {
+                ErrorCode = 403,
+                ResponseCode = 404,
+                ResponsePagePath = "/index.html"
+            }
+        ],
+        DefaultRootObject = "index.html",
+        DefaultCacheBehavior = new DistributionDefaultCacheBehaviorArgs
+        {
+            AllowedMethods = ["GET", "HEAD"],
+            CachePolicyId = "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            CachedMethods = ["GET", "HEAD"],
+            Compress = true,
+            TargetOriginId = originId,
+            ViewerProtocolPolicy = "redirect-to-https"
+        },
+        Enabled = true,
+        HttpVersion = "http2and3",
+        Origins = new[]
+        {
+            new DistributionOriginArgs
+            {
+                DomainName = bucket.BucketRegionalDomainName,
+                OriginAccessControlId = originAccessControl.Id,
+                OriginId = originId,
+            }
+        },
+        PriceClass = "PriceClass_100",
+        Restrictions = new DistributionRestrictionsArgs
+        {
+            GeoRestriction = new DistributionRestrictionsGeoRestrictionArgs
+            {
+                Locations = [],
+                RestrictionType = "none"
+            }
+        },
+        RetainOnDelete = false,
+        ViewerCertificate = new DistributionViewerCertificateArgs
+        {
+            CloudfrontDefaultCertificate = true
+        },
+        WaitForDeployment = false,
+    }, new CustomResourceOptions { Provider = provider });
+
+    var bucketPolicy = new BucketPolicy($"{prefix}-bucketpolicy", new BucketPolicyArgs
+    {
+        Bucket = bucket.BucketName,
+        Policy = GetPolicyDocument.Invoke(new GetPolicyDocumentInvokeArgs
+        {
+            Version = "2012-10-17",
+            Statements =
+            [
+                new GetPolicyDocumentStatementInputArgs
+                {
+                    Effect = "Allow",
+                    Principals =
+                    [
+                        new GetPolicyDocumentStatementPrincipalInputArgs
+                        {
+                            Identifiers = ["cloudfront.amazonaws.com"],
+                            Type = "Service"
+                        }
+                    ],
+                    Actions = ["s3:GetObject"],
+                    Resources = [ bucket.Arn.Apply(x => $"{x}/*") ],
+                    Conditions =
+                    [
+                        new GetPolicyDocumentStatementConditionInputArgs
+                        {
+                            Test = "StringEquals",
+                            Values = distribution.Arn,
+                            Variable = "AWS:SourceArn"
+                        }
+                    ],
+                }
+            ]
+        }, new InvokeOptions { Provider = provider }).Apply(x => x.Json)
+    }, new CustomResourceOptions { Provider = provider });
+
+    var record = new Record($"{prefix}-record-blazortetris", new RecordArgs
     {
         Name = "blazortetris",
         Ttl = 300,
         Type = "CNAME",
         Records = [ distributions.Distribution.DomainName ],
         ZoneId = awsZoneId
-    }, new CustomResourceOptions { Provider = provider });
+    }, new CustomResourceOptions { Provider = provider, DeleteBeforeReplace = true});
 
     return new Dictionary<string, object?>
     {
