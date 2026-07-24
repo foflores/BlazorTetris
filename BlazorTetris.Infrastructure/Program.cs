@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BlazorTetris.Infrastructure.Components;
 using Pulumi;
 using Pulumi.Aws;
+using Pulumi.Aws.Acm;
 using Pulumi.Aws.CloudFront;
 using Pulumi.Aws.CloudFront.Inputs;
 using Pulumi.Aws.Iam;
@@ -35,21 +37,10 @@ return await Deployment.RunAsync(() =>
         EnvProvider = providers.EnvProvider
     });
 
-    var certificates = new Certificates(prefix, new CertificatesArgs
-    {
-        DnsProvider = providers.DnsProvider,
-        EnvProvider = providers.EnvProvider,
-        Domain = domain,
-        SubjectAlternativeNames = new InputList<string>(),
-        ZoneId = zoneId
-    });
-
     var distributions = new Distributions(prefix, new DistributionsArgs
     {
         EnvProvider = providers.EnvProvider,
         SourceBucket = buckets.SourceBucket,
-        Certificate = certificates.Certificate,
-        CertificateValidation = certificates.CertificateValidation,
         Domain = domain
     });
 
@@ -83,6 +74,47 @@ return await Deployment.RunAsync(() =>
         ForceDestroy = true
     }, new CustomResourceOptions { Provider = provider });
 
+    var count = 1;
+    var certificate = new Certificate($"{prefix}-certicate", new CertificateArgs
+    {
+        DomainName = domain,
+        ValidationMethod = "DNS"
+    }, new CustomResourceOptions { Provider = provider });
+
+    var validationRecordFqdns = certificate.DomainValidationOptions.Apply(domainValidationOptions =>
+    {
+        List<Record> validationRecords = [];
+        foreach (var option in domainValidationOptions)
+        {
+            if (option.DomainName is null
+                || option.ResourceRecordName is null
+                || option.ResourceRecordType is null
+                || option.ResourceRecordValue is null)
+            {
+                continue;
+            }
+
+            validationRecords.Add(new Record($"{prefix}-record-validation-{count:00}", new RecordArgs
+            {
+                AllowOverwrite = true,
+                Name = option.ResourceRecordName,
+                Records = [ option.ResourceRecordValue ],
+                Ttl = 60,
+                Type = option.ResourceRecordType,
+                ZoneId = awsZoneId
+            }, new CustomResourceOptions { Provider = provider }));
+            count++;
+        }
+
+        return Output.All(validationRecords.Select(y => y.Fqdn));
+    });
+
+    var certificateValidation = new CertificateValidation($"{prefix}-certificatevalidation", new CertificateValidationArgs
+    {
+        CertificateArn = certificate.Arn,
+        ValidationRecordFqdns = validationRecordFqdns
+    }, new CustomResourceOptions { Provider = provider });
+
     var originAccessControl = new OriginAccessControl($"{prefix}-originaccesscontrol", new OriginAccessControlArgs
     {
         OriginAccessControlOriginType = "s3",
@@ -94,6 +126,7 @@ return await Deployment.RunAsync(() =>
 
     var distribution = new Distribution($"{prefix}-distribution", new DistributionArgs
     {
+        Aliases = [ domain ],
         CustomErrorResponses =
         [
             new DistributionCustomErrorResponseArgs
@@ -136,10 +169,12 @@ return await Deployment.RunAsync(() =>
         RetainOnDelete = false,
         ViewerCertificate = new DistributionViewerCertificateArgs
         {
-            CloudfrontDefaultCertificate = true
+            AcmCertificateArn = certificate.Arn,
+            SslSupportMethod = "sni-only",
+            MinimumProtocolVersion = "TLSv1.2_2021"
         },
         WaitForDeployment = false,
-    }, new CustomResourceOptions { Provider = provider });
+    }, new CustomResourceOptions { Provider = provider, DependsOn = distributions.Distribution });
 
     var bucketPolicy = new BucketPolicy($"{prefix}-bucketpolicy", new BucketPolicyArgs
     {

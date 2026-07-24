@@ -1,6 +1,5 @@
 using Pulumi;
 using Pulumi.Aws;
-using Pulumi.Aws.Acm;
 using Pulumi.Aws.CloudFront;
 using Pulumi.Aws.CloudFront.Inputs;
 using Pulumi.Aws.S3;
@@ -11,8 +10,6 @@ public class DistributionsArgs
 {
     public required Provider EnvProvider { get; init; }
     public required Bucket SourceBucket { get; init; }
-    public required Certificate Certificate { get; init; }
-    public required CertificateValidation CertificateValidation { get; init; }
     public required Input<string> Domain { get; init; }
 }
 
@@ -34,7 +31,6 @@ public class Distributions
 
         Distribution = new Distribution($"{prefix}-distribution-main", new DistributionArgs
         {
-            Aliases = [ args.Domain ],
             CustomErrorResponses =
             [
                 new DistributionCustomErrorResponseArgs
@@ -77,11 +73,9 @@ public class Distributions
             RetainOnDelete = false,
             ViewerCertificate = new DistributionViewerCertificateArgs
             {
-                AcmCertificateArn = args.Certificate.Arn,
-                SslSupportMethod = "sni-only",
-                MinimumProtocolVersion = "TLSv1.2_2021"
+                CloudfrontDefaultCertificate = true
             },
             WaitForDeployment = false,
-        }, new CustomResourceOptions { Provider = args.EnvProvider, DependsOn = args.CertificateValidation });
+        }, new CustomResourceOptions { Provider = args.EnvProvider });
     }
 }
