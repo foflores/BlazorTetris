@@ -216,7 +216,7 @@ return await Deployment.RunAsync(() =>
         Name = "blazortetris",
         Ttl = 300,
         Type = "CNAME",
-        Records = [ distributions.Distribution.DomainName ],
+        Records = [ distribution.DomainName ],
         ZoneId = awsZoneId
     }, new CustomResourceOptions { Provider = provider, DeleteBeforeReplace = true});
 
