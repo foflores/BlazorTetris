@@ -19,10 +19,7 @@ return await Deployment.RunAsync(() =>
 {
     var prefix = $"{Deployment.Instance.ProjectName}-{Deployment.Instance.StackName}";
     var config = new Config();
-    var zoneId = config.Require("zone-id");
     var domain = config.Require("domain");
-    var recordName = config.Require("record-name");
-
     var awsAccountId = config.Require("aws-account-id");
     var awsIacRoleArn = config.Require("aws-iac-role-arn");
     var awsZoneId = config.Require("aws-zone-id");
