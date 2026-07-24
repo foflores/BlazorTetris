@@ -46,14 +46,6 @@ return await Deployment.RunAsync(() =>
 
     buckets.CreateSourceBucketPolicy(distributions.Distribution);
 
-    var records = new Records(prefix, new RecordsArgs
-    {
-        DnsProvider = providers.DnsProvider,
-        Distribution = distributions.Distribution,
-        ZoneId = zoneId,
-        RecordName = recordName
-    });
-
     var awsAccountId = config.Require("aws-account-id");
     var awsIacRoleArn = config.Require("aws-iac-role-arn");
     var awsZoneId = config.Require("aws-zone-id");
@@ -126,7 +118,6 @@ return await Deployment.RunAsync(() =>
 
     var distribution = new Distribution($"{prefix}-distribution", new DistributionArgs
     {
-        Aliases = [ domain ],
         CustomErrorResponses =
         [
             new DistributionCustomErrorResponseArgs
@@ -169,9 +160,7 @@ return await Deployment.RunAsync(() =>
         RetainOnDelete = false,
         ViewerCertificate = new DistributionViewerCertificateArgs
         {
-            AcmCertificateArn = certificate.Arn,
-            SslSupportMethod = "sni-only",
-            MinimumProtocolVersion = "TLSv1.2_2021"
+            CloudfrontDefaultCertificate = true
         },
         WaitForDeployment = false,
     }, new CustomResourceOptions { Provider = provider, DependsOn = distributions.Distribution });
