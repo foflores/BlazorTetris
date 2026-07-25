@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Target Environment'
+        description: Target Environment
         required: true
         type: choice
         options:
@@ -13,13 +13,14 @@ on:
 
 jobs:
   preview-infrastructure:
+    name: Preview Infrastructure
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v7
         with:
-          fetch-depth: '0'
+          fetch-depth: 0
 
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v6

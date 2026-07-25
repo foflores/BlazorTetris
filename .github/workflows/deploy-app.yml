@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Target Environment'
+        description: Target Environment
         required: true
         type: choice
         options:
@@ -13,18 +13,19 @@ on:
 
 jobs:
   deploy-app:
+    name: Deploy App
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v7
         with:
-          fetch-depth: '0'
+          fetch-depth: 0
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10'
+          dotnet-version: 10
 
       - name: Restore dependencies
         run: dotnet restore
@@ -42,8 +43,8 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
 
       - name: Deploy to aws
-        run: aws s3 sync ./publish/wwwroot s3://${{ vars.AWS_SOURCE_BUCKET }} --delete
+        run: aws s3 sync ./publish/wwwroot s3://${{ vars.AWS_BUCKET_NAME }} --delete
         working-directory: ./BlazorTetris
 
       - name: Invalidate cdn
-        run: aws cloudfront create-invalidation --distribution-id ${{ vars.AWS_MAIN_DISTRIBUTION }} --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.AWS_DISTRIBUTION_ID }} --paths "/*"
