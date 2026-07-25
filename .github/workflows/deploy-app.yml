@@ -8,8 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - Dev
-          - Prod
+          - dev
+          - prod
 
 jobs:
   deploy-app:
